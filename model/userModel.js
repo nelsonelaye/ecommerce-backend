@@ -1,19 +1,34 @@
 const mongoose = require("mongoose");
 const userModel = mongoose.Schema(
 	{
-		fullName: {
+		firstName: {
 			type: String,
+		},
+
+		lastName: {
+			type: String,
+		},
+		country: {
+			type: String,
+		},
+		address: {
+			type: String,
+		},
+		city: {
+			type: String,
+		},
+		state: {
+			type: String,
+		},
+		zipCode: {
+			type: Number,
 		},
 		email: {
 			type: String,
 		},
 		password: {
 			type: String,
-		},
-		rating: {
-			type: mongoose.Schema.Types.ObjectId,
-			ref: "ratings",
-		},
+		}
 	},
 	{ timestamps: true },
 );

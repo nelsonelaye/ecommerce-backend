@@ -1,5 +1,6 @@
 const userModel = require("../model/userModel");
 const productModel = require("../model/productModel");
+const salesModel = require("../model/salesModel");
 
 const createProduct = async (req, res) => {
   try {
@@ -25,6 +26,7 @@ const createProduct = async (req, res) => {
     });
   }
 };
+
 const getProduct = async (req, res) => {
   try {
     const product = await productModel.find();
@@ -41,12 +43,12 @@ const getProduct = async (req, res) => {
   }
 };
 
-const updateProduct = async (req, res) => {
+const buyProduct = async (req, res) => {
   try {
     const Id = req.params.id;
-    const { title, quantity } = req.body;
-    const good = await productModel.findById(Id);
-    if (good.quantity < 1) {
+    const { title, qty } = req.body;
+    const product = await productModel.findById(Id);
+    if (product.quantity < 1) {
       await productModel.findByIdAndUpdate(
         Id,
         {
@@ -58,12 +60,12 @@ const updateProduct = async (req, res) => {
       res.status(201).json({
         message: "no product found",
       });
-    } else if (good.quantity < quantity) {
+    } else if (product.quantity < quantity) {
       res.status(201).json({
-        message: `can't order above ${good.quantity} because ${quantity} is not greater than ${good.quantity}`,
+        message: `can't order above ${product.quantity} because ${qty} is not greater than ${product.quantity}`,
       });
     } else {
-      const product = await productModel.findByIdAndUpdate(
+      await productModel.findByIdAndUpdate(
         Id,
         {
           title,
@@ -73,7 +75,7 @@ const updateProduct = async (req, res) => {
         { new: true }
       );
 
-      if (good.quantity < 1) {
+      if (product.quantity < 1) {
         await productModel.findByIdAndUpdate(
           Id,
           {
@@ -94,6 +96,31 @@ const updateProduct = async (req, res) => {
   } catch (error) {
     res.status(404).json({
       status: "fail",
+      message: error.message,
+    });
+  }
+};
+
+const updateProduct = async (req, res) => {
+  try {
+    const product = await productModel.findById(req.params.id);
+
+    if (product) {
+      const newProduct = await productModel.findByIdAndUpdate(
+        product._id,
+        req.body,
+        { new: true }
+      );
+      res.status(200).json({
+        data: newProduct,
+      });
+    } else {
+      res.status(404).json({
+        message: "product not found",
+      });
+    }
+  } catch (error) {
+    res.status(500).json({
       message: error.message,
     });
   }
